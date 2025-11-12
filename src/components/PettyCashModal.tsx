@@ -14,8 +14,10 @@ interface CategoryAmounts {
   stationary: string;
   incentive: string;
   breakage: string;
+  breakageName: string;
   petrol: string;
   advance: string;
+  advanceName: string;
   excisePolice: string;
   desiBhada: string;
   otherPurchaseVoucherNo: string;
@@ -57,8 +59,10 @@ export default function PettyCashModal({
     stationary: "",
     incentive: "",
     breakage: "",
+    breakageName: "",
     petrol: "",
     advance: "",
+    advanceName: "",
     excisePolice: "",
     desiBhada: "",
     otherPurchaseVoucherNo: "",
@@ -124,8 +128,10 @@ export default function PettyCashModal({
           stationary: "",
           incentive: "",
           breakage: "",
+          breakageName: "",
           petrol: "",
           advance: "",
+          advanceName: "",
           excisePolice: "",
           desiBhada: "",
           otherPurchaseVoucherNo: "",
@@ -455,6 +461,19 @@ export default function PettyCashModal({
                   />
                 </div>
 
+                {/* Advance Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Advance Name</label>
+                  <input
+                    type="text"
+                    name="advanceName"
+                    value={formData.advanceName}
+                    onChange={handleChange}
+                    placeholder="Enter advance name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white"
+                  />
+                </div>
+
                 {/* Breakage */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Breakage</label>
@@ -466,6 +485,19 @@ export default function PettyCashModal({
                     placeholder="0.00"
                     step="0.01"
                     min="0"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white"
+                  />
+                </div>
+
+                {/* Breakage Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Breakage Name</label>
+                  <input
+                    type="text"
+                    name="breakageName"
+                    value={formData.breakageName}
+                    onChange={handleChange}
+                    placeholder="Enter breakage name"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white"
                   />
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+gimport { useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,6 +33,8 @@ export default function Reports() {
   const [dateFrom, setDateFrom] = useState("2025-11-01");
   const [dateTo, setDateTo] = useState("2025-11-04");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [cashTally, setCashTally] = useState("total");
+  const [pettyCash, setPettyCash] = useState("daily");
 
   const pieChartData = {
     labels: [
@@ -149,7 +151,7 @@ export default function Reports() {
     <div className="space-y-6">
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Filter Options</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               From Date
@@ -187,6 +189,34 @@ export default function Reports() {
               <option value="stationary">Stationary</option>
               <option value="light">Light Bill</option>
               <option value="office">Office Supplies</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Cash Tally
+            </label>
+            <select
+              value={cashTally}
+              onChange={(e) => setCashTally(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent"
+            >
+              <option value="total">Total</option>
+              <option value="breakdown">Breakdown</option>
+              <option value="summary">Summary</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Petty Cash
+            </label>
+            <select
+              value={pettyCash}
+              onChange={(e) => setPettyCash(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent"
+            >
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
             </select>
           </div>
         </div>
