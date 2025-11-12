@@ -1,4 +1,4 @@
-gimport { useState } from "react";
+import { useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
