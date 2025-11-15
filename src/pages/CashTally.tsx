@@ -44,6 +44,8 @@ export default function CashTally({
   });
 
   const [totalAmount, setTotalAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     if (isOpen) {
@@ -116,30 +118,113 @@ export default function CashTally({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const existingEntries = JSON.parse(
-      localStorage.getItem("cashTallyEntries") || "[]"
-    );
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  
+  try {
+    // Get current timestamp
+    const timestamp = new Date().toLocaleString('en-IN', { 
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+
+    // Prepare the row data array - Column A to AI
+    const rowData = [
+      timestamp,                          // Column A - Timestamp
+      formData.date,                      // Column B - Date
+      formData.name,                      // Column C - Employee Name
+      formData.retailScanAmount,          // Column D - Scan Amount
+      formData.retail500,                 // Column E - ₹500
+      formData.retail200,                 // Column F - ₹200
+      formData.retail100,                 // Column G - ₹100
+      formData.retail50,                  // Column H - ₹50
+      formData.retail20,                  // Column I - ₹20
+      formData.retail10,                  // Column J - ₹10
+      formData.retail1,                   // Column K - ₹1
+      formData.retailGpay,                // Column L - GPay/UPI
+      formData.retailCard,                // Column M - Card Payments
+      formData.wsCashBillingAmount,       // Column N - Cash Billing
+      formData.wsCreditBillingAmount,     // Column O - Credit Billing
+      formData.wsCreditReceipt,           // Column P - Credit Receipt
+      formData.ws500,                     // Column Q - ₹500
+      formData.ws200,                     // Column R - ₹200
+      formData.ws100,                     // Column S - ₹100
+      formData.ws50,                      // Column T - ₹50
+      formData.ws20,                      // Column U - ₹20
+      formData.ws10,                      // Column V - ₹10
+      formData.ws1,                       // Column W - ₹1
+      formData.wsGpayCard,                // Column X - GPay/Card
+      formData.expense,                   // Column Y - General Expense
+      formData.homeDelivery,              // Column Z - Home Delivery
+      formData.retail500,                 // Column AA - ₹500 (repeat for another section)
+      formData.retail200,                 // Column AB - ₹200
+      formData.retail100,                 // Column AC - ₹100
+      formData.retail50,                  // Column AD - ₹50
+      formData.retail20,                  // Column AE - ₹20
+      formData.retail10,                  // Column AF - ₹10
+      formData.retail1,                   // Column AG - ₹1
+      formData.wsGpayCard,                // Column AH - GPay/Card
+      formData.voidSale                   // Column AI - Void Sale
+    ];
+
+    // Dynamic sheet name based on counter prop
+    const sheetName = `Cash Tally Counter ${counter}`;
+
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
     
-    if (initialData) {
-      // Update existing entry
-      const updatedEntries = existingEntries.map((entry: any) => 
-        entry.id === initialData.id ? { ...formData, id: initialData.id } : entry
+    const formDataToSend = new URLSearchParams({
+      sheetName: sheetName,
+      action: "insert",
+      rowData: JSON.stringify(rowData)
+    });
+
+    const response = await fetch(scriptUrl, {
+      method: "POST",
+      body: formDataToSend
+    });
+
+    const result = await response.json();
+    
+    if (result.success) {
+      // Update localStorage
+      const existingEntries = JSON.parse(
+        localStorage.getItem("cashTallyEntries") || "[]"
       );
-      localStorage.setItem("cashTallyEntries", JSON.stringify(updatedEntries));
+      
+      if (initialData) {
+        const updatedEntries = existingEntries.map((entry: any) => 
+          entry.id === initialData.id ? { ...formData, id: initialData.id } : entry
+        );
+        localStorage.setItem("cashTallyEntries", JSON.stringify(updatedEntries));
+      } else {
+        const newEntry = { id: Date.now().toString(), ...formData };
+        localStorage.setItem(
+          "cashTallyEntries",
+          JSON.stringify([newEntry, ...existingEntries])
+        );
+      }
+      
+      onClose();
+      alert("Data saved successfully!");
     } else {
-      // Create new entry
-      const newEntry = { id: Date.now().toString(), ...formData };
-      localStorage.setItem(
-        "cashTallyEntries",
-        JSON.stringify([newEntry, ...existingEntries])
-      );
+      console.error("Error:", result.error);
+      alert("Failed to save data: " + result.error);
     }
-    
-    console.log("Form submitted:", formData);
-    onClose();
-  };
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    alert("Error submitting form. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   if (!isOpen) return null;
 
@@ -588,11 +673,23 @@ export default function CashTally({
               Cancel
             </button>
             <button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-[#2a5298] text-white rounded-lg font-semibold hover:bg-[#1e3d70] transition-all"
-            >
-              Save Entry
-            </button>
+  type="submit"
+  disabled={isLoading}
+  className="flex-1 px-6 py-3 bg-[#2a5298] text-white rounded-lg font-semibold hover:bg-[#1e3d70] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+>
+  {isLoading ? (
+    <>
+      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Saving...
+    </>
+  ) : (
+    "Save Entry"
+  )}
+</button>
+
           </div>
         </form>
       </div>

@@ -87,6 +87,8 @@ export default function PettyCashModal({
   });
 
   const [totalAmount, setTotalAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     const sum = [
@@ -167,11 +169,84 @@ export default function PettyCashModal({
     setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave(formData);
-    onClose();
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  
+  try {
+    // Get current timestamp
+    const timestamp = new Date().toLocaleString('en-IN', { 
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+
+    const rowData = [
+      timestamp,
+      formData.date,
+      formData.openingQty,
+      formData.closing,
+      formData.teaNasta,
+      formData.waterJar,
+      formData.lightBill,
+      formData.recharge,
+      formData.postOffice,
+      formData.customerDiscount,
+      formData.repairMaintenance,
+      formData.stationary,
+      formData.petrol,
+      formData.patilPetrol,
+      formData.incentive,
+      formData.advance,
+      formData.advanceName,
+      formData.breakage,
+      formData.breakageName,
+      formData.excisePolice,
+      formData.desiBhada,
+      formData.roomExpense,
+      formData.officeExpense,
+      formData.personalExpense,
+      formData.miscExpense,
+      formData.creditCardCharges
+    ];
+
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
+    
+    const formDataToSend = new URLSearchParams({
+      sheetName: "Patty Expence",
+      action: "insert",
+      rowData: JSON.stringify(rowData)
+    });
+
+    const response = await fetch(scriptUrl, {
+      method: "POST",
+      body: formDataToSend
+    });
+
+    const result = await response.json();
+    
+    if (result.success) {
+      onSave(formData);
+      onClose();
+      alert("Data saved successfully!");
+    } else {
+      console.error("Error:", result.error);
+      alert("Failed to save data: " + result.error);
+    }
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    alert("Error submitting form. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
 
   if (!isOpen) return null;
 
@@ -758,11 +833,23 @@ export default function PettyCashModal({
               Cancel
             </button>
             <button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-[#2a5298] text-white rounded-lg font-semibold hover:bg-[#1e3d70] transition-all"
-            >
-              Save Entry
-            </button>
+  type="submit"
+  disabled={isLoading}
+  className="flex-1 px-6 py-3 bg-[#2a5298] text-white rounded-lg font-semibold hover:bg-[#1e3d70] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+>
+  {isLoading ? (
+    <>
+      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Saving...
+    </>
+  ) : (
+    "Save Entry"
+  )}
+</button>
+
           </div>
         </form>
       </div>

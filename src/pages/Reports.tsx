@@ -1,4 +1,320 @@
-import { useState } from "react";
+// import { useState } from "react";
+// import {
+//   Chart as ChartJS,
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   ArcElement,
+//   Title,
+//   Tooltip,
+//   Legend,
+// } from "chart.js";
+// import { Pie, Line } from "react-chartjs-2";
+// import {
+//   FaFilePdf,
+//   FaFileExcel,
+//   FaChartPie,
+//   FaChartLine,
+// } from "react-icons/fa";
+
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   ArcElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
+
+// export default function Reports() {
+//   const [dateFrom, setDateFrom] = useState("2025-11-01");
+//   const [dateTo, setDateTo] = useState("2025-11-04");
+//   const [selectedCategory, setSelectedCategory] = useState("all");
+//   const [cashTally, setCashTally] = useState("total");
+//   const [pettyCash, setPettyCash] = useState("daily");
+
+//   const pieChartData = {
+//     labels: [
+//       "Tea + Nasta",
+//       "Petrol",
+//       "Stationary",
+//       "Light Bill",
+//       "Office Supplies",
+//     ],
+//     datasets: [
+//       {
+//         label: "Expenses by Category",
+//         data: [3500, 8000, 4200, 2800, 1500],
+//         backgroundColor: [
+//           "rgba(42, 82, 152, 0.8)",
+//           "rgba(239, 68, 68, 0.8)",
+//           "rgba(59, 130, 246, 0.8)",
+//           "rgba(251, 191, 36, 0.8)",
+//           "rgba(16, 185, 129, 0.8)",
+//         ],
+//         borderColor: [
+//           "rgba(42, 82, 152, 1)",
+//           "rgba(239, 68, 68, 1)",
+//           "rgba(59, 130, 246, 1)",
+//           "rgba(251, 191, 36, 1)",
+//           "rgba(16, 185, 129, 1)",
+//         ],
+//         borderWidth: 2,
+//       },
+//     ],
+//   };
+
+//   const lineChartData = {
+//     labels: ["Nov 1", "Nov 2", "Nov 3", "Nov 4"],
+//     datasets: [
+//       {
+//         label: "Daily Expenses",
+//         data: [2500, 3800, 4200, 3200],
+//         borderColor: "rgba(42, 82, 152, 1)",
+//         backgroundColor: "rgba(42, 82, 152, 0.1)",
+//         tension: 0.4,
+//         fill: true,
+//         pointRadius: 6,
+//         pointHoverRadius: 8,
+//         pointBackgroundColor: "rgba(42, 82, 152, 1)",
+//         pointBorderColor: "#fff",
+//         pointBorderWidth: 2,
+//       },
+//     ],
+//   };
+
+//   const pieOptions = {
+//     responsive: true,
+//     maintainAspectRatio: false,
+//     plugins: {
+//       legend: {
+//         position: "bottom" as const,
+//         labels: {
+//           padding: 20,
+//           font: {
+//             size: 12,
+//             family: "'Segoe UI', sans-serif",
+//           },
+//         },
+//       },
+//       tooltip: {
+//         callbacks: {
+//           label: function (context: any) {
+//             const label = context.label || "";
+//             const value = context.parsed || 0;
+//             return `${label}: ₹${value.toLocaleString("en-IN")}`;
+//           },
+//         },
+//       },
+//     },
+//   };
+
+//   const lineOptions = {
+//     responsive: true,
+//     maintainAspectRatio: false,
+//     plugins: {
+//       legend: {
+//         display: false,
+//       },
+//       tooltip: {
+//         callbacks: {
+//           label: function (context: any) {
+//             return `Expenses: ₹${context.parsed.y.toLocaleString("en-IN")}`;
+//           },
+//         },
+//       },
+//     },
+//     scales: {
+//       y: {
+//         beginAtZero: true,
+//         ticks: {
+//           callback: function (value: any) {
+//             return "₹" + value.toLocaleString("en-IN");
+//           },
+//         },
+//       },
+//     },
+//   };
+
+//   const handleExportPDF = () => {
+//     alert("Exporting report as PDF...");
+//   };
+
+//   const handleExportExcel = () => {
+//     alert("Exporting report as Excel...");
+//   };
+
+//   return (
+//     <div className="space-y-6">
+//       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+//         <h2 className="text-xl font-bold text-gray-800 mb-4">Filter Options</h2>
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+//           <div>
+//             <label className="block text-sm font-semibold text-gray-700 mb-2">
+//               From Date
+//             </label>
+//             <input
+//               type="date"
+//               value={dateFrom}
+//               onChange={(e) => setDateFrom(e.target.value)}
+//               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent"
+//             />
+//           </div>
+//           <div>
+//             <label className="block text-sm font-semibold text-gray-700 mb-2">
+//               To Date
+//             </label>
+//             <input
+//               type="date"
+//               value={dateTo}
+//               onChange={(e) => setDateTo(e.target.value)}
+//               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent"
+//             />
+//           </div>
+//           <div>
+//             <label className="block text-sm font-semibold text-gray-700 mb-2">
+//               Category
+//             </label>
+//             <select
+//               value={selectedCategory}
+//               onChange={(e) => setSelectedCategory(e.target.value)}
+//               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent"
+//             >
+//               <option value="all">All Categories</option>
+//               <option value="tea">Tea + Nasta</option>
+//               <option value="petrol">Petrol</option>
+//               <option value="stationary">Stationary</option>
+//               <option value="light">Light Bill</option>
+//               <option value="office">Office Supplies</option>
+//             </select>
+//           </div>
+//           <div>
+//             <label className="block text-sm font-semibold text-gray-700 mb-2">
+//               Cash Tally
+//             </label>
+//             <select
+//               value={cashTally}
+//               onChange={(e) => setCashTally(e.target.value)}
+//               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent"
+//             >
+//               <option value="total">Total</option>
+//               <option value="breakdown">Breakdown</option>
+//               <option value="summary">Summary</option>
+//             </select>
+//           </div>
+//           <div>
+//             <label className="block text-sm font-semibold text-gray-700 mb-2">
+//               Petty Cash
+//             </label>
+//             <select
+//               value={pettyCash}
+//               onChange={(e) => setPettyCash(e.target.value)}
+//               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent"
+//             >
+//               <option value="daily">Daily</option>
+//               <option value="weekly">Weekly</option>
+//               <option value="monthly">Monthly</option>
+//             </select>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+//           <div className="flex items-center gap-3 mb-6">
+//             <div className="bg-blue-100 p-2 rounded-lg">
+//               <FaChartPie className="text-[#2a5298] text-xl" />
+//             </div>
+//             <div>
+//               <h3 className="text-lg font-bold text-gray-800">
+//                 Expense by Category
+//               </h3>
+//               <p className="text-sm text-gray-600">Distribution of expenses</p>
+//             </div>
+//           </div>
+//           <div className="h-[300px] md:h-[350px]">
+//             <Pie data={pieChartData} options={pieOptions} />
+//           </div>
+//         </div>
+
+//         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+//           <div className="flex items-center gap-3 mb-6">
+//             <div className="bg-green-100 p-2 rounded-lg">
+//               <FaChartLine className="text-green-600 text-xl" />
+//             </div>
+//             <div>
+//               <h3 className="text-lg font-bold text-gray-800">
+//                 Daily Expense Trend
+//               </h3>
+//               <p className="text-sm text-gray-600">Expenses over time</p>
+//             </div>
+//           </div>
+//           <div className="h-[300px] md:h-[350px]">
+//             <Line data={lineChartData} options={lineOptions} />
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+//           <div>
+//             <h3 className="text-lg font-bold text-gray-800">Export Reports</h3>
+//             <p className="text-sm text-gray-600 mt-1">
+//               Download your reports in various formats
+//             </p>
+//           </div>
+//           <div className="flex flex-wrap gap-3">
+//             <button
+//               onClick={handleExportPDF}
+//               className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
+//             >
+//               <FaFilePdf />
+//               Export PDF
+//             </button>
+//             <button
+//               onClick={handleExportExcel}
+//               className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all shadow-md hover:shadow-lg"
+//             >
+//               <FaFileExcel />
+//               Export Excel
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+//         <h3 className="text-lg font-bold text-gray-800 mb-4">
+//           Summary Statistics
+//         </h3>
+//         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+//           <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+//             <p className="text-sm text-gray-600 mb-1">Total Expenses</p>
+//             <p className="text-2xl font-bold text-blue-700">₹20,000</p>
+//           </div>
+//           <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+//             <p className="text-sm text-gray-600 mb-1">Avg. Daily</p>
+//             <p className="text-2xl font-bold text-green-700">₹5,000</p>
+//           </div>
+//           <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+//             <p className="text-sm text-gray-600 mb-1">Highest Day</p>
+//             <p className="text-2xl font-bold text-yellow-700">₹8,000</p>
+//           </div>
+//           <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+//             <p className="text-sm text-gray-600 mb-1">Categories</p>
+//             <p className="text-2xl font-bold text-purple-700">5</p>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+import { useState, useEffect } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,6 +334,7 @@ import {
   FaChartLine,
 } from "react-icons/fa";
 
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,31 +346,142 @@ ChartJS.register(
   Legend
 );
 
+
 export default function Reports() {
   const [dateFrom, setDateFrom] = useState("2025-11-01");
   const [dateTo, setDateTo] = useState("2025-11-04");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [cashTally, setCashTally] = useState("total");
   const [pettyCash, setPettyCash] = useState("daily");
+  const [isLoading, setIsLoading] = useState(true);
+  const [chartData, setChartData] = useState({
+    categoryData: { labels: [] as string[], data: [] as number[] },
+    dailyData: { labels: [] as string[], data: [] as number[] },
+    stats: { total: 0, avgDaily: 0, highest: 0, categoryCount: 0 }
+  });
+
+  // Fetch data from Google Sheets
+  useEffect(() => {
+    fetchReportData();
+  }, [dateFrom, dateTo, selectedCategory]);
+
+  const fetchReportData = async () => {
+    try {
+      setIsLoading(true);
+      const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
+      
+      const response = await fetch(`${scriptUrl}?sheet=Patty Expence&action=fetch`);
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        const data = result.data.slice(1); // Skip header row
+        
+        // Filter data by date range
+        const filteredData = data.filter((row: any[]) => {
+          const rowDate = row[1]; // Column B - Date
+          return rowDate >= dateFrom && rowDate <= dateTo;
+        });
+
+        // Process data for charts
+        const categoryTotals: { [key: string]: number } = {};
+        const dailyTotals: { [key: string]: number } = {};
+
+        filteredData.forEach((row: any[]) => {
+          const date = row[1];
+          
+          // Calculate category totals
+          const categories = {
+            'Tea & Snacks': parseFloat(row[4]) || 0,
+            'Water Jar': parseFloat(row[5]) || 0,
+            'Electricity Bill': parseFloat(row[6]) || 0,
+            'Recharge': parseFloat(row[7]) || 0,
+            'Post Office': parseFloat(row[8]) || 0,
+            'Customer Discount': parseFloat(row[9]) || 0,
+            'Repair & Maintenance': parseFloat(row[10]) || 0,
+            'Stationary': parseFloat(row[11]) || 0,
+            'Petrol': parseFloat(row[12]) || 0,
+            'Patil Petrol': parseFloat(row[13]) || 0,
+            'Incentive': parseFloat(row[14]) || 0,
+            'Advance': parseFloat(row[15]) || 0,
+            'Breakage': parseFloat(row[17]) || 0,
+            'Excise/Police': parseFloat(row[19]) || 0,
+            'Desi Bhada': parseFloat(row[20]) || 0,
+            'Room Expense': parseFloat(row[21]) || 0,
+            'Office Expense': parseFloat(row[22]) || 0,
+            'Personal Expense': parseFloat(row[23]) || 0,
+            'Miscellaneous': parseFloat(row[24]) || 0,
+            'Credit Card Charges': parseFloat(row[25]) || 0,
+          };
+
+          // Sum up categories
+          Object.entries(categories).forEach(([category, amount]) => {
+            if (amount > 0) {
+              categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+            }
+          });
+
+          // Sum up daily totals
+          const dayTotal = Object.values(categories).reduce((sum, val) => sum + val, 0);
+          dailyTotals[date] = (dailyTotals[date] || 0) + dayTotal;
+        });
+
+        // Prepare chart data
+        const categoryLabels = Object.keys(categoryTotals);
+        const categoryValues = Object.values(categoryTotals);
+        
+        const dailyLabels = Object.keys(dailyTotals).sort();
+        const dailyValues = dailyLabels.map(date => dailyTotals[date]);
+
+        // Calculate statistics
+        const totalExpenses = categoryValues.reduce((sum, val) => sum + val, 0);
+        const avgDaily = dailyValues.length > 0 ? totalExpenses / dailyValues.length : 0;
+        const highest = Math.max(...dailyValues, 0);
+
+        setChartData({
+          categoryData: { labels: categoryLabels, data: categoryValues },
+          dailyData: { labels: dailyLabels, data: dailyValues },
+          stats: {
+            total: totalExpenses,
+            avgDaily: avgDaily,
+            highest: highest,
+            categoryCount: categoryLabels.length
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching report data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const pieChartData = {
-    labels: [
-      "Tea + Nasta",
-      "Petrol",
-      "Stationary",
-      "Light Bill",
-      "Office Supplies",
-    ],
+    labels: chartData.categoryData.labels,
     datasets: [
       {
         label: "Expenses by Category",
-        data: [3500, 8000, 4200, 2800, 1500],
+        data: chartData.categoryData.data,
         backgroundColor: [
           "rgba(42, 82, 152, 0.8)",
           "rgba(239, 68, 68, 0.8)",
           "rgba(59, 130, 246, 0.8)",
           "rgba(251, 191, 36, 0.8)",
           "rgba(16, 185, 129, 0.8)",
+          "rgba(139, 92, 246, 0.8)",
+          "rgba(236, 72, 153, 0.8)",
+          "rgba(34, 197, 94, 0.8)",
+          "rgba(249, 115, 22, 0.8)",
+          "rgba(168, 85, 247, 0.8)",
+          "rgba(14, 165, 233, 0.8)",
+          "rgba(244, 63, 94, 0.8)",
+          "rgba(132, 204, 22, 0.8)",
+          "rgba(251, 146, 60, 0.8)",
+          "rgba(124, 58, 237, 0.8)",
+          "rgba(236, 72, 153, 0.8)",
+          "rgba(20, 184, 166, 0.8)",
+          "rgba(251, 191, 36, 0.8)",
+          "rgba(99, 102, 241, 0.8)",
+          "rgba(239, 68, 68, 0.8)",
         ],
         borderColor: [
           "rgba(42, 82, 152, 1)",
@@ -61,6 +489,21 @@ export default function Reports() {
           "rgba(59, 130, 246, 1)",
           "rgba(251, 191, 36, 1)",
           "rgba(16, 185, 129, 1)",
+          "rgba(139, 92, 246, 1)",
+          "rgba(236, 72, 153, 1)",
+          "rgba(34, 197, 94, 1)",
+          "rgba(249, 115, 22, 1)",
+          "rgba(168, 85, 247, 1)",
+          "rgba(14, 165, 233, 1)",
+          "rgba(244, 63, 94, 1)",
+          "rgba(132, 204, 22, 1)",
+          "rgba(251, 146, 60, 1)",
+          "rgba(124, 58, 237, 1)",
+          "rgba(236, 72, 153, 1)",
+          "rgba(20, 184, 166, 1)",
+          "rgba(251, 191, 36, 1)",
+          "rgba(99, 102, 241, 1)",
+          "rgba(239, 68, 68, 1)",
         ],
         borderWidth: 2,
       },
@@ -68,11 +511,11 @@ export default function Reports() {
   };
 
   const lineChartData = {
-    labels: ["Nov 1", "Nov 2", "Nov 3", "Nov 4"],
+    labels: chartData.dailyData.labels,
     datasets: [
       {
         label: "Daily Expenses",
-        data: [2500, 3800, 4200, 3200],
+        data: chartData.dailyData.data,
         borderColor: "rgba(42, 82, 152, 1)",
         backgroundColor: "rgba(42, 82, 152, 0.1)",
         tension: 0.4,
@@ -146,6 +589,20 @@ export default function Reports() {
   const handleExportExcel = () => {
     alert("Exporting report as Excel...");
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <svg className="animate-spin h-10 w-10 text-[#2a5298] mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p className="text-gray-600">Loading report data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -292,19 +749,27 @@ export default function Reports() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-sm text-gray-600 mb-1">Total Expenses</p>
-            <p className="text-2xl font-bold text-blue-700">₹20,000</p>
+            <p className="text-2xl font-bold text-blue-700">
+              ₹{chartData.stats.total.toLocaleString('en-IN')}
+            </p>
           </div>
           <div className="p-4 bg-green-50 rounded-lg border border-green-200">
             <p className="text-sm text-gray-600 mb-1">Avg. Daily</p>
-            <p className="text-2xl font-bold text-green-700">₹5,000</p>
+            <p className="text-2xl font-bold text-green-700">
+              ₹{Math.round(chartData.stats.avgDaily).toLocaleString('en-IN')}
+            </p>
           </div>
           <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
             <p className="text-sm text-gray-600 mb-1">Highest Day</p>
-            <p className="text-2xl font-bold text-yellow-700">₹8,000</p>
+            <p className="text-2xl font-bold text-yellow-700">
+              ₹{Math.round(chartData.stats.highest).toLocaleString('en-IN')}
+            </p>
           </div>
           <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
             <p className="text-sm text-gray-600 mb-1">Categories</p>
-            <p className="text-2xl font-bold text-purple-700">5</p>
+            <p className="text-2xl font-bold text-purple-700">
+              {chartData.stats.categoryCount}
+            </p>
           </div>
         </div>
       </div>
