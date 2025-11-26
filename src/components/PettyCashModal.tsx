@@ -11,6 +11,7 @@ import {
 
 interface CategoryAmounts {
   id?: string;
+  username: string;
   openingQty: string;
   teaNasta: string;
   waterJar: string;
@@ -38,6 +39,9 @@ interface CategoryAmounts {
   miscExpense: string;
   closing: string;
   creditCardCharges: string;
+  
+  transactionStatus:string;
+  
   date: string;
 }
 
@@ -56,6 +60,7 @@ export default function PettyCashModal({
 }: PettyCashModalProps) {
   const [formData, setFormData] = useState<CategoryAmounts>({
     id: "",
+    username: "",
     openingQty: "",
     teaNasta: "",
     waterJar: "",
@@ -83,11 +88,14 @@ export default function PettyCashModal({
     miscExpense: "",
     closing: "",
     creditCardCharges: "",
+   
+    transactionStatus: "Pending",
     date: new Date().toISOString().split("T")[0],
   });
 
   const [totalAmount, setTotalAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [fetchedUsers, setFetchedUsers] = useState<string[]>([]); // New state
 
 
   useEffect(() => {
@@ -116,9 +124,30 @@ export default function PettyCashModal({
       parseFloat(formData.miscExpense) || 0,
       parseFloat(formData.closing) || 0,
       parseFloat(formData.creditCardCharges) || 0,
+    
     ].reduce((acc, val) => acc + val, 0);
     setTotalAmount(sum);
   }, [formData]);
+
+const fetchUsernames = async () => {
+  try {
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
+    const response = await fetch(`${scriptUrl}?sheetName=Login&action=getSheetData`);
+    const result = await response.json();
+
+    if (result.success && Array.isArray(result.data)) {
+      // If your backend now sends data from row 2:
+      const usernames = result.data.map((row: any[]) => row[0]).filter((name) => !!name);
+      setFetchedUsers(usernames);
+    } else {
+      console.error("Error fetching usernames:", result.error);
+    }
+  } catch (error) {
+    console.error("Error fetching usernames:", error);
+  }
+};
+
+
 
   useEffect(() => {
     if (isOpen) {
@@ -127,6 +156,7 @@ export default function PettyCashModal({
       } else {
         setFormData({
           id: "",
+          username: "",
           openingQty: "",
           teaNasta: "",
           waterJar: "",
@@ -154,16 +184,19 @@ export default function PettyCashModal({
           miscExpense: "",
           closing: "",
           creditCardCharges: "",
+        
+          transactionStatus: "Pending",
           date: new Date().toISOString().split("T")[0],
         });
       }
+      fetchUsernames(); // Call fetch usernames when modal opens
     }
   }, [isOpen, initialData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+console.log(setFormData,"hhh")
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
     setFormData({ ...formData, [e.target.name]: value });
@@ -174,6 +207,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   setIsLoading(true);
   
   try {
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
+    
     // Get current timestamp
     const timestamp = new Date().toLocaleString('en-IN', { 
       timeZone: 'Asia/Kolkata',
@@ -186,9 +221,26 @@ const handleSubmit = async (e: React.FormEvent) => {
       hour12: true
     });
 
+    // Generate ID only if it's a new entry (not editing)
+    let generatedId = formData.id;
+    if (!initialData?.id) {
+      // Fetch the last ID from the sheet
+      const idResponse = await fetch(`${scriptUrl}?sheetName=Patty Expence&action=getLastId`);
+      const idResult = await idResponse.json();
+      
+      if (idResult.success && idResult.lastId) {
+        const lastNumber = parseInt(idResult.lastId.split('-')[1]) || 0;
+        generatedId = `PT-${String(lastNumber + 1).padStart(2, '0')}`;
+      } else {
+        generatedId = 'PT-01';
+      }
+    }
+
     const rowData = [
       timestamp,
+      generatedId,
       formData.date,
+      
       formData.openingQty,
       formData.closing,
       formData.teaNasta,
@@ -212,10 +264,11 @@ const handleSubmit = async (e: React.FormEvent) => {
       formData.officeExpense,
       formData.personalExpense,
       formData.miscExpense,
-      formData.creditCardCharges
+      formData.creditCardCharges,
+      formData.username,
+      '',
+      formData.transactionStatus 
     ];
-
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
     
     const formDataToSend = new URLSearchParams({
       sheetName: "Patty Expence",
@@ -231,8 +284,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     const result = await response.json();
     
     if (result.success) {
-      onSave(formData);
-      onClose();
+     
       alert("Data saved successfully!");
     } else {
       console.error("Error:", result.error);
@@ -291,6 +343,27 @@ const handleSubmit = async (e: React.FormEvent) => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent transition-all bg-white"
                     required
                   />
+                </div>
+
+                {/* Username */}
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-700">
+                    Username <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2a5298] focus:border-transparent transition-all bg-white"
+                    required
+                  >
+                    <option value="">Select User</option>
+                    {fetchedUsers.map((user) => (
+                      <option key={user} value={user}>
+                        {user}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Opening Qty */}
@@ -812,6 +885,10 @@ const handleSubmit = async (e: React.FormEvent) => {
               </div>
             </div>
           </div>
+
+
+
+
 
           <div className="mt-6 p-4 bg-[#f5f7fa] rounded-lg border border-gray-200">
             <div className="flex justify-between items-center">

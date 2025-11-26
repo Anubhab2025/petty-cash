@@ -1,6 +1,7 @@
 export interface Transaction {
   id?: string;
   openingQty: string;
+  rowIndex?: number;
   teaNasta: string;
   waterJar: string;
   lightBill: string;
@@ -25,8 +26,15 @@ export interface Transaction {
   miscExpense: string;
   closing: string;
   creditCardCharges: string;
+  transactionStatus: string;
   date: string;
   user?: string; // Optional for mock data
+  amount:number;
+  sheetName:string;
+  remarks:string;
+  description:string;
+  category:string;
+  name?: string; // Optional name field
 }
 
 export interface TransactionFormData {

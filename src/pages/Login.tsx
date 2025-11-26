@@ -173,61 +173,69 @@ export default function Login() {
   const { setUser } = useAuth();
 
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
+  setIsLoading(true);
 
-    if (!username || !password) {
-      setError('Please enter both username and password');
-      setIsLoading(false);
-      return;
-    }
+  if (!username || !password) {
+    setError('Please enter both username and password');
+    setIsLoading(false);
+    return;
+  }
 
-    try {
-      const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
+  try {
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbx5dryxS1R5zp6myFfUlP1QPimufTqh5hcPcFMNcAJ-FiC-hyQL9mCkgHSbLkOiWTibeg/exec";
+    
+    const response = await fetch(`${scriptUrl}?sheet=Login&action=fetch`);
+    console.log('status', response.status);
+    const result = await response.json();
+    console.log('result', result);
+    
+    if (result.success && result.data) {
+      const users = result.data.slice(0); // Skip header row
       
-      const response = await fetch(`${scriptUrl}?sheet=Login&action=fetch`);
-      const result = await response.json();
+      // Find user by username and password (Column B = username, Column C = password)
+      const user = users.find((row: any[]) => 
+        row[1] === username && row[2] === password
+      );
       
-      if (result.success && result.data) {
-        const users = result.data.slice(1); // Skip header row
-        
-        // Find user by username and password (Column B = username, Column C = password)
-        const user = users.find((row: any[]) => 
-          row[1] === username && row[2] === password
-        );
-        
-        if (user) {
-          const initials = user[1]
-            .split(' ')
-            .map((n: string) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2) || 'U';
+      if (user) {
+        const initials = user[1]
+          .split(' ')
+          .map((n: string) => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2) || 'U';
 
-          const userData = {
-            name: user[1],      // Username from Column B
-            role: user[3],      // Role from Column D
-            pages: user[4],     // Pages from Column E
-            initials: initials
-          };
-          
-          // Set user in context (will auto-save to localStorage)
-          setUser(userData);
-        } else {
-          setError('Invalid username or password');
-        }
+        const userData = {
+          name: user[1],      // Username from Column B
+          role: user[3],      // Role from Column D
+          pages: user[4],     // Pages from Column E
+          initials: initials
+        };
+        
+        // Store in localStorage for Dashboard to access
+        localStorage.setItem('currentUserName', userData.name);
+        localStorage.setItem('currentUserRole', userData.role);
+        
+        console.log('User logged in:', userData.name, 'Role:', userData.role); // Debug
+        
+        // Set user in context (will auto-save to localStorage)
+        setUser(userData);
       } else {
-        setError('Failed to authenticate. Please try again.');
+        setError('Invalid username or password');
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Connection error. Please try again.');
-    } finally {
-      setIsLoading(false);
+    } else {
+      setError('Failed to authenticate. Please try again.');
     }
-  };
+  } catch (error) {
+    console.error('Login error:', error);
+    setError('Connection error. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 
   return (
